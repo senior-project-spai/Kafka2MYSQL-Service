@@ -7,7 +7,6 @@ import json
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_PORT = os.environ['KAFKA_PORT']
 KAFKA_TOPIC_INPUT = os.environ['KAFKA_TOPIC_INPUT']
-KAFKA_TOPIC_OUTPUT = os.environ['KAFKA_TOPIC_OUTPUT']
 
 MYSQL_HOST = os.environ['MYSQL_HOST']
 MYSQL_USER = os.environ['MYSQL_USER']
