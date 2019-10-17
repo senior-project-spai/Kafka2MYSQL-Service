@@ -26,6 +26,8 @@ def main():
 		    "VALUES (%(time)s, %(Gender)s, %(Race)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s)")
 
 	for data in consumer:
+	    print('New Data')
+	    print(data.value)
 	    mydb = mysql.connector.connect(
 		host=MYSQL_HOST,
 		user=MYSQL_USER,
@@ -34,8 +36,6 @@ def main():
 		database=MYSQL_DB,
 	    )
 	    cursor = mydb.cursor()
-	    print('New Data')
-	    print(data.value)
 	    cursor.execute(add_data_query, data.value)
 	    mydb.commit()
 	    cursor.close()
