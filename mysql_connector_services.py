@@ -23,8 +23,8 @@ def main():
 				    value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 
 	add_data_query = ("INSERT INTO data "
-		    "(time, gender, gender_accuracy, race, race_accuracy, position_top, position_left, position_right, position_bottom, branch_id, camera_id, filepath) "
-		    "VALUES (%(time)s, %(gender)s, %(gender_accuracy)s, %(race)s, %(race_accuracy)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(filepath)s)")
+		    "(time, gender, gender_confident, race, race_confident, position_top, position_left, position_right, position_bottom, branch_id, camera_id, filepath) "
+		    "VALUES (%(time)s, %(gender)s, %(gender_confident)s, %(race)s, %(race_confident)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(filepath)s)")
 	print("Kafka2MYSQL-Service Started")
 	for data in consumer:
 		data_json = data.value
@@ -42,9 +42,9 @@ def main():
 			data_to_update = {
 				'time': data_json['time'],
 				'gender':result['gender']['gender'],
-				'gender_accuracy':result['gender']['accuracy'],
+				'gender_confident':result['gender']['confident'],
 				'race':result['race']['race'],
-				'race_accuracy':result['race']['accuracy'],
+				'race_confident':result['race']['confident'],
 				'position_top':result['top'],
 				'position_left':result['left'],
 				'position_right':result['right'],
