@@ -38,20 +38,20 @@ def main():
 			database=MYSQL_DB,
 	    )
 
-		for result in data_json.results:
+		for result in data_json['results']:
 			data_to_update = {
-				'time': data_json.time,
-				'gender':result.gender.gender,
-				'gender_accuracy':result.gender.accuracy,
-				'race':result.gender.race,
-				'race_accuracy':result.race.accuracy,
-				'position_top':result.top,
-				'position_left':result.left,
-				'position_right':result.right,
-				'position_bottom':result.bottom,
-				'branch_id':data_json.branch_id,
-				'camera_id': data_json.camera_id,
-				'filepath':data_json.filepath,
+				'time': data_json['time'],
+				'gender':result['gender']['gender'],
+				'gender_accuracy':result['gender']['accuracy'],
+				'race':result['race']['race'],
+				'race_accuracy':result['race']['accuracy'],
+				'position_top':result['top'],
+				'position_left':result['left'],
+				'position_right':result['right'],
+				'position_bottom':result['bottom'],
+				'branch_id':data_json['branch_id'],
+				'camera_id': data_json['camera_id'],
+				'filepath':data_json['filepath'],
 			}
 			cursor = mydb.cursor()
 			cursor.execute(add_data_query, data_to_update)
