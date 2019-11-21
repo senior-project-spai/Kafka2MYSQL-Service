@@ -24,7 +24,7 @@ def main():
 	add_data_query = ("INSERT INTO data "
 		    "(time, Gender, Race, position_top, position_left, position_right, position_bottom) "
 		    "VALUES (%(time)s, %(Gender)s, %(Race)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s)")
-
+	print("Kafka2MYSQL-Service Started")
 	for data in consumer:
 	    print('New Data')
 	    print(data.value)
