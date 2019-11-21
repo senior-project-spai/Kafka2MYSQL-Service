@@ -13,6 +13,7 @@ MYSQL_USER = os.environ['MYSQL_USER']
 MYSQL_PASS = os.environ['MYSQL_PASS']
 MYSQL_PORT = os.environ['MYSQL_PORT']
 MYSQL_DB = os.environ['MYSQL_DB']
+
 def main():
 	consumer = KafkaConsumer(KAFKA_TOPIC_INPUT,
 				    bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
@@ -22,26 +23,44 @@ def main():
 				    value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 
 	add_data_query = ("INSERT INTO data "
-		    "(time, Gender, Race, position_top, position_left, position_right, position_bottom) "
-		    "VALUES (%(time)s, %(Gender)s, %(Race)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s)")
+		    "(time, gender, gender_accuracy, race, race_accuracy, position_top, position_left, position_right, position_bottom, branch_id, camera_id, photo_link) "
+		    "VALUES (%(time)s, %(gender)s, %(gender_accuracy)s, %(race)s, %(race_accuracy)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(photo_link)s)")
 
 	for data in consumer:
-	    print('New Data')
-	    print(data.value)
-	    mydb = mysql.connector.connect(
-		host=MYSQL_HOST,
-		user=MYSQL_USER,
-		passwd=MYSQL_PASS,
-		port=MYSQL_PORT,
-		database=MYSQL_DB,
+		data_json = data.value
+		print('New Data')
+		print(data_json)
+		mydb = mysql.connector.connect(
+			host=MYSQL_HOST,
+			user=MYSQL_USER,
+			passwd=MYSQL_PASS,
+			port=MYSQL_PORT,
+			database=MYSQL_DB,
 	    )
-	    cursor = mydb.cursor()
-	    cursor.execute(add_data_query, data.value)
-	    mydb.commit()
-	    cursor.close()
-	    mydb.close()
-	    print('Added to MYSQL')
-	    print()
+
+		for result in data_json.results:
+			data_to_update = {
+				'time': data_json.time,
+				'gender':result.gender.gender,
+				'gender_accuracy':result.gender.accuracy,
+				'race':result.gender.race,
+				'race_accuracy':result.race.accuracy,
+				'position_top':result.top,
+				'position_left':result.left,
+				'position_right':result.right,
+				'position_bottom':result.bottom,
+				'branch_id':data_json.branch_id,
+				'camera_id': data_json.camera_id,
+				'photo_link':data_json.photo_link,
+			}
+			cursor = mydb.cursor()
+			cursor.execute(add_data_query, data_to_update)
+			mydb.commit()
+			cursor.close()
+			print(str(data_to_update.photo_link)+str(data_to_update.branch_id)+str(data_to_update.camera_id)+" Added")
+
+		mydb.close()
+		print()
 	
 if __name__ == '__main__':
     main()
