@@ -23,8 +23,8 @@ def main():
 				    value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 
 	add_data_query = ("INSERT INTO data "
-		    "(time, gender, gender_accuracy, race, race_accuracy, position_top, position_left, position_right, position_bottom, branch_id, camera_id, photo_link) "
-		    "VALUES (%(time)s, %(gender)s, %(gender_accuracy)s, %(race)s, %(race_accuracy)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(photo_link)s)")
+		    "(time, gender, gender_accuracy, race, race_accuracy, position_top, position_left, position_right, position_bottom, branch_id, camera_id, filepath) "
+		    "VALUES (%(time)s, %(gender)s, %(gender_accuracy)s, %(race)s, %(race_accuracy)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(filepath)s)")
 
 	for data in consumer:
 		data_json = data.value
@@ -51,7 +51,7 @@ def main():
 				'position_bottom':result.bottom,
 				'branch_id':data_json.branch_id,
 				'camera_id': data_json.camera_id,
-				'photo_link':data_json.photo_link,
+				'filepath':data_json.filepath,
 			}
 			cursor = mydb.cursor()
 			cursor.execute(add_data_query, data_to_update)
