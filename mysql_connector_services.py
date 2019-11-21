@@ -57,7 +57,7 @@ def main():
 			cursor.execute(add_data_query, data_to_update)
 			mydb.commit()
 			cursor.close()
-			print(str(data_to_update.photo_link)+str(data_to_update.branch_id)+str(data_to_update.camera_id)+" Added")
+			print(str(data_to_update.filepath)+str(data_to_update.branch_id)+str(data_to_update.camera_id)+" Added")
 
 		mydb.close()
 		print()
