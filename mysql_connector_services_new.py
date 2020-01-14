@@ -21,11 +21,11 @@ c = Consumer({
 
 c.subscribe(['face-result-gender', 'face-result-race', 'test'])
 
-add_gender_query = ("INSERT INTO gender "
+add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
                     "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
 
-add_race_query = ("INSERT INTO race "
+add_race_query = ("INSERT INTO Race "
                   "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
                   "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
 
@@ -51,10 +51,16 @@ def add_gender(msg):
         'time': msg_json['time']
     }
     cursor = mydb.cursor()
-    cursor.execute(add_gender_query, data_to_update)
+    error = False
+    try:
+        cursor.execute(add_gender_query, data_to_update)
+    except (mysql.connector.Error) as e:
+        print(e)
+        error = True
     mydb.commit()
     cursor.close()
-    print("Added")
+    if not error:
+        print("Added")
     mydb.close()
     print()
 
@@ -80,10 +86,16 @@ def add_race(msg):
         'time': msg_json['time']
     }
     cursor = mydb.cursor()
-    cursor.execute(add_race_query, data_to_update)
+    error = False
+    try:
+        cursor.execute(add_race_query, data_to_update)
+    except (mysql.connector.Error) as e:
+        print(e)
+        error = True
     mydb.commit()
     cursor.close()
-    print("Added")
+    if not error:
+        print("Added")
     mydb.close()
     print()
 
@@ -97,11 +109,12 @@ func_dict = {'face-result-gender': add_gender,
              'face-result-race': add_race,
              'test': test}
 
-print("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(MYSQL_HOST,KAFKA_HOST,KAFKA_PORT))
+print("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
+    MYSQL_HOST, KAFKA_HOST, KAFKA_PORT))
 
 while True:
     msg = c.poll(1.0)
-    
+
     if msg is None:
         continue
     if msg.error():
