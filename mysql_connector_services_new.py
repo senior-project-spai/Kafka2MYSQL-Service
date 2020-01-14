@@ -97,9 +97,11 @@ func_dict = {'face-result-gender': add_gender,
              'face-result-race': add_race,
              'test': test}
 
+print("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(MYSQL_HOST,KAFKA_HOST,KAFKA_PORT))
+
 while True:
     msg = c.poll(1.0)
-
+    
     if msg is None:
         continue
     if msg.error():
