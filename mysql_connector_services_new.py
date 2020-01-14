@@ -3,9 +3,9 @@ import mysql.connector
 import time
 import os
 import json
+
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_PORT = os.environ['KAFKA_PORT']
-KAFKA_TOPIC_INPUT = os.environ['KAFKA_TOPIC_INPUT']
 
 MYSQL_HOST = os.environ['MYSQL_HOST']
 MYSQL_USER = os.environ['MYSQL_USER']
@@ -105,6 +105,7 @@ while True:
     if msg.error():
         print("Consumer error: {}".format(msg.error()))
         continue
+    print("NEW MSG {}".format(msg.topic()))
 
     # print('Received message: {}'.format(msg.value().decode('utf-8')))
     func_dict[msg.topic()](msg.value().decode('utf-8'))
