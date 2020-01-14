@@ -13,34 +13,89 @@ MYSQL_PASS = os.environ['MYSQL_PASS']
 MYSQL_PORT = os.environ['MYSQL_PORT']
 MYSQL_DB = os.environ['MYSQL_DB']
 
-func_dict = {"face-result": face_result,  "topic-two": process_topic_two}
-
 c = Consumer({
     'bootstrap.servers': '{}:{}'.format(KAFKA_HOST, KAFKA_PORT),
     'group.id': 'my-group',
     'auto.offset.reset': 'earliest'
 })
 
-c.subscribe(['face-result', 'face-result-gender', 'face-result-race'])
+c.subscribe(['face-result-gender', 'face-result-race', 'test'])
 
-add_data_query = ("INSERT INTO data "
-        "(epoch, time, gender, gender_confident, race, race_confident, position_top, position_left, position_right, position_bottom, branch_id, camera_id, filepath) "
-        "VALUES (%(epoch)s, %(time)s, %(gender)s, %(gender_confident)s, %(race)s, %(race_confident)s, %(position_top)s, %(position_left)s, %(position_right)s, %(position_bottom)s, %(branch_id)s, %(camera_id)s, %(filepath)s)")
+add_gender_query = ("INSERT INTO gender "
+                    "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
+                    "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
 
-def face_result(msg):
+add_race_query = ("INSERT INTO race "
+                  "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
+                  "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
+
+
+def add_gender(msg):
     msg_json = json.loads(msg)
     print(msg)
     mydb = mysql.connector.connect(
-			host=MYSQL_HOST,
-			user=MYSQL_USER,
-			passwd=MYSQL_PASS,
-			port=MYSQL_PORT,
-			database=MYSQL_DB,
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        passwd=MYSQL_PASS,
+        port=MYSQL_PORT,
+        database=MYSQL_DB,
     )
-    for result in data_json['results']:
-        pass
+    data_to_update = {
+        'face_image_id': msg_json['face_image_id'],
+        'type': msg_json['type'],
+        'confidence': msg_json['confidence'],
+        'position_top': msg_json['position_top'],
+        'position_right': msg_json['position_right'],
+        'position_bottom': msg_json['position_bottom'],
+        'position_left': msg_json['position_left'],
+        'time': msg_json['time']
+    }
+    cursor = mydb.cursor()
+    cursor.execute(add_gender_query, data_to_update)
+    mydb.commit()
+    cursor.close()
+    print("Added")
     mydb.close()
-	print()
+    print()
+
+
+def add_race(msg):
+    msg_json = json.loads(msg)
+    print(msg)
+    mydb = mysql.connector.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        passwd=MYSQL_PASS,
+        port=MYSQL_PORT,
+        database=MYSQL_DB,
+    )
+    data_to_update = {
+        'face_image_id': msg_json['face_image_id'],
+        'type': msg_json['type'],
+        'confidence': msg_json['confidence'],
+        'position_top': msg_json['position_top'],
+        'position_right': msg_json['position_right'],
+        'position_bottom': msg_json['position_bottom'],
+        'position_left': msg_json['position_left'],
+        'time': msg_json['time']
+    }
+    cursor = mydb.cursor()
+    cursor.execute(add_race_query, data_to_update)
+    mydb.commit()
+    cursor.close()
+    print("Added")
+    mydb.close()
+    print()
+
+
+def test(msg):
+    msg_json = json.loads(msg)
+    print(msg)
+
+
+func_dict = {'face-result-gender': add_gender,
+             'face-result-race': add_race,
+             'test': test}
 
 while True:
     msg = c.poll(1.0)
