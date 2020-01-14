@@ -105,9 +105,11 @@ def test(msg):
     print(msg)
 
 
-func_dict = {'face-result-gender': add_gender,
-             'face-result-race': add_race,
-             'test': test}
+func_dict = {
+    'face-result-gender': add_gender,
+    'face-result-race': add_race,
+    'test': test
+}
 
 print("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
     MYSQL_HOST, KAFKA_HOST, KAFKA_PORT))
