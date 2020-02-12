@@ -7,11 +7,11 @@ import json
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_PORT = os.environ['KAFKA_PORT']
 
-MYSQL_HOST = os.environ['MYSQL_HOST']
-MYSQL_USER = os.environ['MYSQL_USER']
-MYSQL_PASS = os.environ['MYSQL_PASS']
-MYSQL_PORT = os.environ['MYSQL_PORT']
-MYSQL_DB = os.environ['MYSQL_DB']
+MYSQL_HOST = os.environ['MYSQL_MASTER_HOST']
+MYSQL_USER = os.environ['MYSQL_MASTER_USER']
+MYSQL_PASS = os.environ['MYSQL_MASTER_PASS']
+MYSQL_PORT = os.environ['MYSQL_MASTER_PORT']
+MYSQL_DB = os.environ['MYSQL_MASTER_DB']
 
 c = Consumer({
     'bootstrap.servers': '{}:{}'.format(KAFKA_HOST, KAFKA_PORT),
