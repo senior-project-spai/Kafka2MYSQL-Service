@@ -31,8 +31,8 @@ add_race_query = ("INSERT INTO Race "
                   "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
 
 add_age_query = ("INSERT INTO Age "
-                 "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time) "
-                 "VALUES (%(face_image_id)s, %(min_age)s, %(max_age)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
+                 "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
+                 "VALUES (%(face_image_id)s, %(min_age)s, %(max_age)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
 
 def add_gender(msg):
