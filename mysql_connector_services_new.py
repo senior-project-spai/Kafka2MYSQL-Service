@@ -30,6 +30,10 @@ add_race_query = ("INSERT INTO Race "
                   "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
                   "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
 
+add_age_query = ("INSERT INTO Age "
+                 "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time) "
+                 "VALUES (%(face_image_id)s, %(min_age)s, %(max_age)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
+
 
 def add_gender(msg):
     msg_json = json.loads(msg)
@@ -130,7 +134,7 @@ def add_age(msg):
     cursor = mydb.cursor()
     error = False
     try:
-        cursor.execute(add_race_query, data_to_update)
+        cursor.execute(add_age_query, data_to_update)
     except (mysql.connector.Error) as e:
         print(e)
         error = True
