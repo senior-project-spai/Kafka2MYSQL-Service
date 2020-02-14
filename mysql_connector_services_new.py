@@ -23,12 +23,12 @@ c.subscribe(['face-result-gender', 'face-result-race',
              'test', 'face-result-age'])
 
 add_gender_query = ("INSERT INTO Gender "
-                    "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
-                    "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
+                    "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
+                    "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
 add_race_query = ("INSERT INTO Race "
-                  "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time) "
-                  "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s)")
+                  "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
+                  "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
 add_age_query = ("INSERT INTO Age "
                  "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
