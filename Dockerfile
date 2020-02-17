@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM python:3.6-slim-stretch
 
 COPY . /root/k2m-service
 RUN cd /root/k2m-service && \
