@@ -15,7 +15,7 @@ MYSQL_DB = os.environ['MYSQL_MASTER_DB']
 
 c = Consumer({
     'bootstrap.servers': '{}:{}'.format(KAFKA_HOST, KAFKA_PORT),
-    'group.id': 'my-group',
+    'group.id': 'Kafka2MYSQL-Service-group',
     'auto.offset.reset': 'earliest'
 })
 
