@@ -22,6 +22,15 @@ MYSQL_PASS = os.environ['MYSQL_MASTER_PASS']
 MYSQL_PORT = os.environ['MYSQL_MASTER_PORT']
 MYSQL_DB = os.environ['MYSQL_MASTER_DB']
 
+# display environment variable
+logger.info('KAFKA_HOST: {}'.format(KAFKA_HOST))
+logger.info('KAFKA_PORT: {}'.format(KAFKA_PORT))
+logger.info('MYSQL_HOST: {}'.format(MYSQL_HOST))
+logger.info('MYSQL_USER: {}'.format(MYSQL_USER))
+# logger.info('MYSQL_PASS: {}'.format(MYSQL_PASS))
+logger.info('MYSQL_PORT: {}'.format(MYSQL_PORT))
+logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
+
 c = Consumer({
     'bootstrap.servers': '{}:{}'.format(KAFKA_HOST, KAFKA_PORT),
     'group.id': 'Kafka2MYSQL-Service-group',
@@ -29,7 +38,7 @@ c = Consumer({
 })
 
 c.subscribe(['face-result-gender', 'face-result-race',
-             'test', 'face-result-age'])
+             'face-result-age'])
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -159,7 +168,6 @@ def add_age(msg):
 func_dict = {
     'face-result-gender': add_gender,
     'face-result-race': add_race,
-    'test': test,
     'face-result-age': add_age
 }
 
