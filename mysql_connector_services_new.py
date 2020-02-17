@@ -32,14 +32,13 @@ logger.info('MYSQL_USER: {}'.format(MYSQL_USER))
 logger.info('MYSQL_PORT: {}'.format(MYSQL_PORT))
 logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
 
-c = KafkaConsumer(['face-result-gender', 'face-result-race',
-                   'face-result-age'],
-                  bootstrap_servers=[
-    '{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
-    auto_offset_reset='earliest',
-    enable_auto_commit=True,
-    group_id='Kafka2MYSQL-Service-group')
+consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
+                  auto_offset_reset='earliest',
+                  enable_auto_commit=True,
+                  group_id='Kafka2MYSQL-Service-group')
 
+consumer.subscribe(topics=['face-result-gender', 'face-result-race',
+                    'face-result-age'])
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -188,6 +187,6 @@ logger.info("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format
 #     func_dict[msg.topic()](msg.value().decode('utf-8'))
 # c.close()
 
-for msg in c:
+for msg in consumer:
     logger.info("NEW Message {}".format(msg.topic))
     func_dict[msg.topic](msg.value.decode('utf-8'))
