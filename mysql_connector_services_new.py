@@ -1,4 +1,5 @@
-from confluent_kafka import Consumer, KafkaError
+from kafka import KafkaProducer
+from kafka import KafkaConsumer
 import mysql.connector
 import time
 import os
@@ -8,8 +9,8 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s - %(name)s - %(message)s'))
+# handler.setFormatter(logging.Formatter(
+#     '%(asctime)s - %(name)s - %(message)s'))
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
@@ -31,14 +32,14 @@ logger.info('MYSQL_USER: {}'.format(MYSQL_USER))
 logger.info('MYSQL_PORT: {}'.format(MYSQL_PORT))
 logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
 
-c = Consumer({
-    'bootstrap.servers': '{}:{}'.format(KAFKA_HOST, KAFKA_PORT),
-    'group.id': 'Kafka2MYSQL-Service-group',
-    'auto.offset.reset': 'earliest'
-})
+c = KafkaConsumer(['face-result-gender', 'face-result-race',
+                   'face-result-age'],
+                  bootstrap_servers=[
+    '{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='Kafka2MYSQL-Service-group')
 
-c.subscribe(['face-result-gender', 'face-result-race',
-             'face-result-age'])
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -175,14 +176,18 @@ func_dict = {
 logger.info("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
     MYSQL_HOST, KAFKA_HOST, KAFKA_PORT))
 
-while True:
-    msg = c.poll(1.0)
+# while True:
+#     msg = c.poll(1.0)
 
-    if msg is None:
-        continue
-    if msg.error():
-        logger.error("Consumer error: {}".format(msg.error()))
-        continue
-    logger.info("NEW Message {}".format(msg.topic()))
-    func_dict[msg.topic()](msg.value().decode('utf-8'))
-c.close()
+#     if msg is None:
+#         continue
+#     if msg.error():
+#         logger.error("Consumer error: {}".format(msg.error()))
+#         continue
+#     logger.info("NEW Message {}".format(msg.topic()))
+#     func_dict[msg.topic()](msg.value().decode('utf-8'))
+# c.close()
+
+for msg in c:
+    logger.info("NEW Message {}".format(msg.topic))
+    func_dict[msg.topic](msg.value.decode('utf-8'))
