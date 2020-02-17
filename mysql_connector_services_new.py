@@ -4,6 +4,15 @@ import time
 import os
 import json
 
+# log
+import logging
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(message)s'))
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_PORT = os.environ['KAFKA_PORT']
 
@@ -37,7 +46,6 @@ add_age_query = ("INSERT INTO Age "
 
 def add_gender(msg):
     msg_json = json.loads(msg)
-    print(msg)
     mydb = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
@@ -60,19 +68,21 @@ def add_gender(msg):
     try:
         cursor.execute(add_gender_query, data_to_update)
     except (mysql.connector.Error) as e:
-        print(e)
+        logger.error(e)
         error = True
     mydb.commit()
     cursor.close()
     if not error:
-        print("Added")
+        logger.info(msg)
+        logger.info('Added')
+    else:
+        logger.error(msg)
+        logger.error('Error')
     mydb.close()
-    print()
 
 
 def add_race(msg):
     msg_json = json.loads(msg)
-    print(msg)
     mydb = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
@@ -95,24 +105,21 @@ def add_race(msg):
     try:
         cursor.execute(add_race_query, data_to_update)
     except (mysql.connector.Error) as e:
-        print(e)
+        logger.error(e)
         error = True
     mydb.commit()
     cursor.close()
     if not error:
-        print("Added")
+        logger.info(msg)
+        logger.info('Added')
+    else:
+        logger.error(msg)
+        logger.error('Error')
     mydb.close()
-    print()
-
-
-def test(msg):
-    msg_json = json.loads(msg)
-    print(msg)
 
 
 def add_age(msg):
     msg_json = json.loads(msg)
-    print(msg)
     mydb = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
@@ -136,14 +143,17 @@ def add_age(msg):
     try:
         cursor.execute(add_age_query, data_to_update)
     except (mysql.connector.Error) as e:
-        print(e)
+        logger.error(e)
         error = True
     mydb.commit()
     cursor.close()
     if not error:
-        print("Added")
+        logger.info(msg)
+        logger.info('Added')
+    else:
+        logger.error(msg)
+        logger.error('Error')
     mydb.close()
-    print()
 
 
 func_dict = {
@@ -153,7 +163,8 @@ func_dict = {
     'face-result-age': add_age
 }
 
-print("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
+
+logger.info("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
     MYSQL_HOST, KAFKA_HOST, KAFKA_PORT))
 
 while True:
@@ -162,10 +173,8 @@ while True:
     if msg is None:
         continue
     if msg.error():
-        print("Consumer error: {}".format(msg.error()))
+        logger.error("Consumer error: {}".format(msg.error()))
         continue
-    print("NEW MSG {}".format(msg.topic()))
-
-    # print('Received message: {}'.format(msg.value().decode('utf-8')))
+    logger.info("NEW Message {}".format(msg.topic()))
     func_dict[msg.topic()](msg.value().decode('utf-8'))
 c.close()
