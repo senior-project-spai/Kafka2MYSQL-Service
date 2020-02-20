@@ -34,7 +34,6 @@ logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
 
 consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
                   auto_offset_reset='earliest',
-                  enable_auto_commit=True,
                   group_id='Kafka2MYSQL-Service-group')
 
 consumer.subscribe(topics=['face-result-gender', 'face-result-race',
