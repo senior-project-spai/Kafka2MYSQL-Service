@@ -34,6 +34,7 @@ logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
 
 consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
                   auto_offset_reset='earliest',
+                  enable_auto_commit=True,
                   group_id='Kafka2MYSQL-Service-group')
 
 consumer.subscribe(topics=['face-result-gender', 'face-result-race',
@@ -167,4 +168,3 @@ func_dict = {
 for msg in consumer:
     logger.info("NEW Message {}".format(msg.topic))
     func_dict[msg.topic](msg.value.decode('utf-8'))
-    consumer.commit()
