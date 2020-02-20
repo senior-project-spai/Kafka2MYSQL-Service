@@ -190,3 +190,4 @@ logger.info("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format
 for msg in consumer:
     logger.info("NEW Message {}".format(msg.topic))
     func_dict[msg.topic](msg.value.decode('utf-8'))
+    consumer.commit()
