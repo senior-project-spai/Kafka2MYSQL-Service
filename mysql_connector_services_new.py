@@ -9,8 +9,8 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
-# handler.setFormatter(logging.Formatter(
-#     '%(asctime)s - %(name)s - %(message)s'))
+handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] - [%(name)s] - [%(levelname)s] - %(message)s'))
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
@@ -83,10 +83,8 @@ def add_gender(msg):
     cursor.close()
     if not error:
         logger.info(msg)
-        logger.info('Added')
     else:
         logger.error(msg)
-        logger.error('Error')
     mydb.close()
 
 
@@ -120,10 +118,8 @@ def add_race(msg):
     cursor.close()
     if not error:
         logger.info(msg)
-        logger.info('Added')
     else:
         logger.error(msg)
-        logger.error('Error')
     mydb.close()
 
 
@@ -158,10 +154,8 @@ def add_age(msg):
     cursor.close()
     if not error:
         logger.info(msg)
-        logger.info('Added')
     else:
         logger.error(msg)
-        logger.error('Error')
     mydb.close()
 
 
@@ -170,22 +164,6 @@ func_dict = {
     'face-result-race': add_race,
     'face-result-age': add_age
 }
-
-
-logger.info("SERVICE STARTED MYSQL_HOST:{}, KAFKA_HOST:{}, KAFKA_PORT:{}".format(
-    MYSQL_HOST, KAFKA_HOST, KAFKA_PORT))
-
-# while True:
-#     msg = c.poll(1.0)
-
-#     if msg is None:
-#         continue
-#     if msg.error():
-#         logger.error("Consumer error: {}".format(msg.error()))
-#         continue
-#     logger.info("NEW Message {}".format(msg.topic()))
-#     func_dict[msg.topic()](msg.value().decode('utf-8'))
-# c.close()
 
 for msg in consumer:
     logger.info("NEW Message {}".format(msg.topic))
