@@ -33,12 +33,12 @@ logger.info('MYSQL_PORT: {}'.format(MYSQL_PORT))
 logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
 
 consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
-                  auto_offset_reset='earliest',
-                  enable_auto_commit=True,
-                  group_id='Kafka2MYSQL-Service-group')
+                         auto_offset_reset='earliest',
+                         enable_auto_commit=True,
+                         group_id='Kafka2MYSQL-Service-group')
 
 consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                    'face-result-age'])
+                           'face-result-age'])
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -51,6 +51,39 @@ add_race_query = ("INSERT INTO Race "
 add_age_query = ("INSERT INTO Age "
                  "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
                  "VALUES (%(face_image_id)s, %(min_age)s, %(max_age)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
+
+add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
+add_Gender_table = ("CREATE TABLE `Gender` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
+add_Race_table = ("CREATE TABLE `Race` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
+add_Test_table = ("CREATE TABLE `Test` (`face_image_id` INT,`test` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
+
+add_result_tables = [add_Age_table, add_Gender_table, add_Race_table,add_Test_table]
+
+
+@app.on_event("startup")
+async def startup_event():
+    mydb = mysql.connector.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        passwd=MYSQL_PASS,
+        port=MYSQL_PORT,
+        database=MYSQL_DB,
+    )
+    cursor = mydb.cursor()
+    error = False
+    try:
+        for table_query in add_result_tables:
+            cursor.execute(table_query)
+    except (mysql.connector.Error) as e:
+        logger.error(e)
+        error = True
+    mydb.commit()
+    cursor.close()
+    if not error:
+        logger.info(msg)
+    else:
+        logger.error(msg)
+    mydb.close()
 
 
 def add_gender(msg):
