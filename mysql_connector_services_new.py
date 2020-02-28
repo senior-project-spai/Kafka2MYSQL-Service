@@ -60,35 +60,30 @@ add_Test_table = ("CREATE TABLE `Test` (`face_image_id` INT,`test` INT,`confiden
 add_result_tables = [add_Age_table,
                      add_Gender_table, add_Race_table, add_Test_table]
 
+
 def add_table_to_database():
-    mydb = mysql.connector.connect(
+    database_connection = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
         passwd=MYSQL_PASS,
         port=MYSQL_PORT,
         database=MYSQL_DB,
     )
-    cursor = mydb.cursor()
+    cursor = database_connection.cursor()
     error = False
     try:
         for table_query in add_result_tables:
             cursor.execute(table_query)
     except (mysql.connector.Error) as e:
         raise e
-    mydb.commit()
+    database_connection.commit()
     cursor.close()
-    mydb.close()
-
-func_dict = {
-    'face-result-gender': add_gender,
-    'face-result-race': add_race,
-    'face-result-age': add_age
-}
+    database_connection.close()
 
 
 def add_gender(msg):
     msg_json = json.loads(msg)
-    mydb = mysql.connector.connect(
+    database_connection = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
         passwd=MYSQL_PASS,
@@ -105,25 +100,25 @@ def add_gender(msg):
         'position_left': msg_json['position_left'],
         'time': msg_json['time']
     }
-    cursor = mydb.cursor()
+    cursor = database_connection.cursor()
     error = False
     try:
         cursor.execute(add_gender_query, data_to_update)
     except (mysql.connector.Error) as e:
         logger.error(e)
         error = True
-    mydb.commit()
+    database_connection.commit()
     cursor.close()
     if not error:
         logger.info(msg)
     else:
         logger.error(msg)
-    mydb.close()
+    database_connection.close()
 
 
 def add_race(msg):
     msg_json = json.loads(msg)
-    mydb = mysql.connector.connect(
+    database_connection = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
         passwd=MYSQL_PASS,
@@ -140,25 +135,25 @@ def add_race(msg):
         'position_left': msg_json['position_left'],
         'time': msg_json['time']
     }
-    cursor = mydb.cursor()
+    cursor = database_connection.cursor()
     error = False
     try:
         cursor.execute(add_race_query, data_to_update)
     except (mysql.connector.Error) as e:
         logger.error(e)
         error = True
-    mydb.commit()
+    database_connection.commit()
     cursor.close()
     if not error:
         logger.info(msg)
     else:
         logger.error(msg)
-    mydb.close()
+    database_connection.close()
 
 
 def add_age(msg):
     msg_json = json.loads(msg)
-    mydb = mysql.connector.connect(
+    database_connection = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
         passwd=MYSQL_PASS,
@@ -176,24 +171,30 @@ def add_age(msg):
         'position_left': msg_json['position_left'],
         'time': msg_json['time']
     }
-    cursor = mydb.cursor()
+    cursor = database_connection.cursor()
     error = False
     try:
         cursor.execute(add_age_query, data_to_update)
     except (mysql.connector.Error) as e:
         logger.error(e)
         error = True
-    mydb.commit()
+    database_connection.commit()
     cursor.close()
     if not error:
         logger.info(msg)
     else:
         logger.error(msg)
-    mydb.close()
+    database_connection.close()
 
+
+function_dict = {
+    'face-result-gender': add_gender,
+    'face-result-race': add_race,
+    'face-result-age': add_age
+}
 
 if __name__ == "__main__":
     add_table_to_database()
     for msg in consumer:
         logger.info("NEW Message {}".format(msg.topic))
-        func_dict[msg.topic](msg.value.decode('utf-8'))
+        function_dict[msg.topic](msg.value.decode('utf-8'))
