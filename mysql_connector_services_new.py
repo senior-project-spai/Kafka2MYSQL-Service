@@ -55,10 +55,9 @@ add_age_query = ("INSERT INTO Age "
 add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Gender_table = ("CREATE TABLE IF NOT EXISTS `Gender` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Race_table = ("CREATE TABLE IF NOT EXISTS `Race` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
-add_Test_table = ("CREATE TABLE IF NOT EXISTS `Test` (`face_image_id` INT,`test` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 
 add_result_tables = [add_Age_table,
-                     add_Gender_table, add_Race_table, add_Test_table]
+                     add_Gender_table, add_Race_table]
 
 
 def add_table_to_database():
