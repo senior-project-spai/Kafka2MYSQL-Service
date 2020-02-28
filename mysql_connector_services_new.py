@@ -185,12 +185,48 @@ def add_age(msg):
     else:
         logger.error(msg)
     database_connection.close()
+    
+    
+def add_test(msg):
+    msg_json = json.loads(msg)
+    database_connection = mysql.connector.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        passwd=MYSQL_PASS,
+        port=MYSQL_PORT,
+        database=MYSQL_DB,
+    )
+    data_to_update = {
+        'face_image_id': msg_json['face_image_id'],
+        'test': msg_json['test'],
+        'confidence': msg_json['confidence'],
+        'position_top': msg_json['position_top'],
+        'position_right': msg_json['position_right'],
+        'position_bottom': msg_json['position_bottom'],
+        'position_left': msg_json['position_left'],
+        'time': msg_json['time']
+    }
+    cursor = database_connection.cursor()
+    error = False
+    try:
+        cursor.execute(add_age_query, data_to_update)
+    except (mysql.connector.Error) as e:
+        logger.error(e)
+        error = True
+    database_connection.commit()
+    cursor.close()
+    if not error:
+        logger.info(msg)
+    else:
+        logger.error(msg)
+    database_connection.close()
 
 
 function_dict = {
     'face-result-gender': add_gender,
     'face-result-race': add_race,
-    'face-result-age': add_age
+    'face-result-age': add_age,
+    'face-result-test':add_test
 }
 
 if __name__ == "__main__":
