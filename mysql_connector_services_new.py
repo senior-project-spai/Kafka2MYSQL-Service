@@ -38,36 +38,27 @@ consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_POR
                          group_id='Kafka2MYSQL-Service-group')
 
 consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                           'face-result-age','face-result-test'])
+                           'face-result-age'])
 
-add_Gender_table = ("CREATE TABLE IF NOT EXISTS `Gender` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
                     "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
-add_Race_table = ("CREATE TABLE IF NOT EXISTS `Race` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_race_query = ("INSERT INTO Race "
                   "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
                   "VALUES (%(face_image_id)s, %(type)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
-add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_age_query = ("INSERT INTO Age "
                  "(face_image_id, min_age, max_age, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
                  "VALUES (%(face_image_id)s, %(min_age)s, %(max_age)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
-<<<<<<< HEAD
-add_Test_table = ("CREATE TABLE IF NOT EXISTS `Test` (`face_image_id` INT,`test` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
-add_test_query = ("INSERT INTO Test "
-                 "(face_image_id, test, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
-                 "VALUES (%(face_image_id)s, %(test)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
-=======
 add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Gender_table = ("CREATE TABLE IF NOT EXISTS `Gender` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Race_table = ("CREATE TABLE IF NOT EXISTS `Race` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
->>>>>>> parent of 308a61e... Merge pull request #1 from senior-project-spai/develop
+add_Test_table = ("CREATE TABLE IF NOT EXISTS `Test` (`face_image_id` INT,`test` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 
 add_result_tables = [add_Age_table,
-                     add_Gender_table, add_Race_table]
+                     add_Gender_table, add_Race_table,add_Test_table]
 
 
 def add_table_to_database():
@@ -194,12 +185,48 @@ def add_age(msg):
     else:
         logger.error(msg)
     database_connection.close()
+    
+    
+def add_test(msg):
+    msg_json = json.loads(msg)
+    database_connection = mysql.connector.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        passwd=MYSQL_PASS,
+        port=MYSQL_PORT,
+        database=MYSQL_DB,
+    )
+    data_to_update = {
+        'face_image_id': msg_json['face_image_id'],
+        'test': msg_json['test'],
+        'confidence': msg_json['confidence'],
+        'position_top': msg_json['position_top'],
+        'position_right': msg_json['position_right'],
+        'position_bottom': msg_json['position_bottom'],
+        'position_left': msg_json['position_left'],
+        'time': msg_json['time']
+    }
+    cursor = database_connection.cursor()
+    error = False
+    try:
+        cursor.execute(add_age_query, data_to_update)
+    except (mysql.connector.Error) as e:
+        logger.error(e)
+        error = True
+    database_connection.commit()
+    cursor.close()
+    if not error:
+        logger.info(msg)
+    else:
+        logger.error(msg)
+    database_connection.close()
 
 
 function_dict = {
     'face-result-gender': add_gender,
     'face-result-race': add_race,
-    'face-result-age': add_age
+    'face-result-age': add_age,
+    'face-result-test':add_test
 }
 
 if __name__ == "__main__":
