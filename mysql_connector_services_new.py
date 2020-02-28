@@ -57,11 +57,10 @@ add_Gender_table = ("CREATE TABLE `Gender` (`face_image_id` INT,`type` TEXT,`con
 add_Race_table = ("CREATE TABLE `Race` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Test_table = ("CREATE TABLE `Test` (`face_image_id` INT,`test` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 
-add_result_tables = [add_Age_table, add_Gender_table, add_Race_table,add_Test_table]
+add_result_tables = [add_Age_table,
+                     add_Gender_table, add_Race_table, add_Test_table]
 
-
-@app.on_event("startup")
-async def startup_event():
+def add_table_to_database():
     mydb = mysql.connector.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
@@ -75,15 +74,16 @@ async def startup_event():
         for table_query in add_result_tables:
             cursor.execute(table_query)
     except (mysql.connector.Error) as e:
-        logger.error(e)
-        error = True
+        raise e
     mydb.commit()
     cursor.close()
-    if not error:
-        logger.info(msg)
-    else:
-        logger.error(msg)
     mydb.close()
+
+func_dict = {
+    'face-result-gender': add_gender,
+    'face-result-race': add_race,
+    'face-result-age': add_age
+}
 
 
 def add_gender(msg):
@@ -192,12 +192,8 @@ def add_age(msg):
     mydb.close()
 
 
-func_dict = {
-    'face-result-gender': add_gender,
-    'face-result-race': add_race,
-    'face-result-age': add_age
-}
-
-for msg in consumer:
-    logger.info("NEW Message {}".format(msg.topic))
-    func_dict[msg.topic](msg.value.decode('utf-8'))
+if __name__ == "__main__":
+    add_table_to_database()
+    for msg in consumer:
+        logger.info("NEW Message {}".format(msg.topic))
+        func_dict[msg.topic](msg.value.decode('utf-8'))
