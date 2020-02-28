@@ -38,7 +38,7 @@ consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_POR
                          group_id='Kafka2MYSQL-Service-group')
 
 consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                           'face-result-age'])
+                           'face-result-age','face-result-test-service'])
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -226,7 +226,7 @@ function_dict = {
     'face-result-gender': add_gender,
     'face-result-race': add_race,
     'face-result-age': add_age,
-    'face-result-test':add_test
+    'face-result-test-service':add_test
 }
 
 if __name__ == "__main__":
