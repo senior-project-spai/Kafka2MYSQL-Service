@@ -212,7 +212,7 @@ def add_test(msg):
     cursor = database_connection.cursor()
     error = False
     try:
-        cursor.execute(add_test_query, data_to_update)
+        cursor.execute(add_age_query, data_to_update)
     except (mysql.connector.Error) as e:
         logger.error(e)
         error = True
