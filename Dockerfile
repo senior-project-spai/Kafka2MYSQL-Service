@@ -5,4 +5,4 @@ RUN cd /root/k2m-service && \
     pip3 install -r requirements.txt
 
 CMD cd /root/k2m-service && \
-    python3 mysql_connector_services.py
+    python3 mysql_connector_services_with_test.py
