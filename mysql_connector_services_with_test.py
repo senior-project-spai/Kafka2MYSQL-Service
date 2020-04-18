@@ -220,7 +220,7 @@ def add_object(msg):
         except (mysql.connector.Error) as e:
             logger.error(e)
             error = True
-    cursor.commit()
+    database_connection.commit()
     cursor.close()
     database_connection.close()
     if not error:
