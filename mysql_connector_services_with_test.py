@@ -57,7 +57,7 @@ add_test_query = ("INSERT INTO Test "
 
 add_object_query = ("INSERT INTO `object` "
                     "(`name`, `probability`, `image_path`, `position_top`, `position_right`, `position_bottom`, `position_left`) "
-                    "VALUES ('%(name)s', '%(probability)s', '%(image_path)s', '%(position_top)s', '%(position_right)s', '%(position_bottom)s', '%(position_left)s')")
+                    "VALUES (%(name)s, %(probability)s, %(image_path)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s)")
 
 add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
 add_Gender_table = ("CREATE TABLE IF NOT EXISTS `Gender` (`face_image_id` INT,`type` TEXT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
