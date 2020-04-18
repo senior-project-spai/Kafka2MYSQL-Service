@@ -208,7 +208,7 @@ def add_object(msg):
     for detection in msg_json["detections"]:
         data_to_update = {
             'name': detection["name"],
-            'probability': detection["percentage_probability"],
+            'probability': detection["percentage_probability"] / 100,
             'image_path': msg_json["image_path"],
             'position_top': detection['box_points'][1],
             'position_right': detection['box_points'][2],
