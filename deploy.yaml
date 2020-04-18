@@ -12,9 +12,6 @@ spec:
             app: kafka2mysql-service
   template:
     metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
-      creationTimestamp: null
       labels:
         app: kafka2mysql-service
     spec:
