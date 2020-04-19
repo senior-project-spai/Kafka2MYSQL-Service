@@ -1,43 +1,10 @@
-from kafka import KafkaProducer
 from kafka import KafkaConsumer
 import mysql.connector
-import time
-import os
 import json
 
-# log
-import logging
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] - [%(name)s] - [%(levelname)s] - %(message)s'))
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
-
-KAFKA_HOST = os.environ['KAFKA_HOST']
-KAFKA_PORT = os.environ['KAFKA_PORT']
-
-MYSQL_HOST = os.environ['MYSQL_MASTER_HOST']
-MYSQL_USER = os.environ['MYSQL_MASTER_USER']
-MYSQL_PASS = os.environ['MYSQL_MASTER_PASS']
-MYSQL_PORT = os.environ['MYSQL_MASTER_PORT']
-MYSQL_DB = os.environ['MYSQL_MASTER_DB']
-
-# display environment variable
-logger.info('KAFKA_HOST: {}'.format(KAFKA_HOST))
-logger.info('KAFKA_PORT: {}'.format(KAFKA_PORT))
-logger.info('MYSQL_HOST: {}'.format(MYSQL_HOST))
-logger.info('MYSQL_USER: {}'.format(MYSQL_USER))
-logger.info('MYSQL_PORT: {}'.format(MYSQL_PORT))
-logger.info('MYSQL_DB: {}'.format(MYSQL_DB))
-
-consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
-                         auto_offset_reset='earliest',
-                         enable_auto_commit=True,
-                         group_id='Kafka2MYSQL-Service-group')
-
-consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                           'face-result-age', 'face-result-test-service', 'object-result'])
+# local module
+from logger import logger
+from config import KAFKA_HOST, KAFKA_PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_PORT, MYSQL_DB
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -55,8 +22,7 @@ add_test_query = ("INSERT INTO Test "
                   "(face_image_id, test, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
                   "VALUES (%(face_image_id)s, %(test)s, %(confidence)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(time)s, unix_timestamp(now(6)))")
 
-add_object_query = ("INSERT INTO `object` "
-                    "(`name`, `probability`, `image_path`, `position_top`, `position_right`, `position_bottom`, `position_left`) "
+add_object_query = ("INSERT INTO `object` (`name`, `probability`, `image_path`, `position_top`, `position_right`, `position_bottom`, `position_left`) "
                     "VALUES (%(name)s, %(probability)s, %(image_path)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s)")
 
 add_Age_table = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
@@ -273,7 +239,18 @@ function_dict = {
 }
 
 if __name__ == "__main__":
+    # initialize Kafka Consumer
+    consumer = KafkaConsumer(bootstrap_servers=['{}:{}'.format(KAFKA_HOST, KAFKA_PORT)],
+                             auto_offset_reset='earliest',
+                             enable_auto_commit=True,
+                             group_id='Kafka2MYSQL-Service-group')
+    consumer.subscribe(topics=['face-result-gender', 'face-result-race',
+                               'face-result-age', 'face-result-test-service', 'object-result'])
+
+    # Create table if it not exist
     add_table_to_database()
+
+    # consume message
     for msg in consumer:
         logger.info("NEW Message {}".format(msg.topic))
         function_dict[msg.topic](msg.value.decode('utf-8'))
