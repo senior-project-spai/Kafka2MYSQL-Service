@@ -1,5 +1,5 @@
 import os
-import logger
+from logger import logger
 
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_PORT = os.environ['KAFKA_PORT']
