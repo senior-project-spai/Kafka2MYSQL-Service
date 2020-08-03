@@ -24,7 +24,7 @@ insert_object_row_query = ("INSERT INTO `object` (      "
                        ")                           ")
 
 
-def add_object(msg):
+def handler(msg):
     # parse json into dict
     msg_json = json.loads(msg)
 
