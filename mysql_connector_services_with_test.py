@@ -4,7 +4,7 @@ import json
 
 # local module
 from logger import logger
-from config import KAFKA_HOST, KAFKA_PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_PORT, MYSQL_DB
+from config import KAFKA_HOST, KAFKA_PORT, MYSQL_CONFIG
 
 add_gender_query = ("INSERT INTO Gender "
                     "(face_image_id, type, confidence, position_top, position_right, position_bottom, position_left, time, added_time) "
@@ -32,15 +32,8 @@ add_result_tables = [add_Age_table,
 
 
 def add_table_to_database():
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
-    error = False
     try:
         for table_query in add_result_tables:
             cursor.execute(table_query)
@@ -53,13 +46,7 @@ def add_table_to_database():
 
 def add_gender(msg):
     msg_json = json.loads(msg)
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     data_to_update = {
         'face_image_id': msg_json['face_image_id'],
         'type': msg_json['type'],
@@ -88,13 +75,7 @@ def add_gender(msg):
 
 def add_race(msg):
     msg_json = json.loads(msg)
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     data_to_update = {
         'face_image_id': msg_json['face_image_id'],
         'type': msg_json['type'],
@@ -123,13 +104,7 @@ def add_race(msg):
 
 def add_age(msg):
     msg_json = json.loads(msg)
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     data_to_update = {
         'face_image_id': msg_json['face_image_id'],
         'min_age': msg_json['min_age'],
@@ -159,13 +134,7 @@ def add_age(msg):
 
 def add_object(msg):
     msg_json = json.loads(msg)
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
     error = False
     insert_object_query = ("INSERT INTO `object` (      "
@@ -212,13 +181,7 @@ def add_object(msg):
 
 def add_test(msg):
     msg_json = json.loads(msg)
-    database_connection = mysql.connector.connect(
-        host=MYSQL_HOST,
-        user=MYSQL_USER,
-        passwd=MYSQL_PASS,
-        port=MYSQL_PORT,
-        database=MYSQL_DB,
-    )
+    database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     data_to_update = {
         'face_image_id': msg_json['face_image_id'],
         'test': msg_json['test'],
