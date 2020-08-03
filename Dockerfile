@@ -1,8 +1,12 @@
 FROM python:3.6-slim-stretch
 
-COPY . /root/k2m-service
-RUN cd /root/k2m-service && \
-    pip3 install -r requirements.txt
+WORKDIR /root/k2m-service
 
-CMD cd /root/k2m-service && \
-    python3 mysql_connector_services_with_test.py
+# Install python package
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+# Copy code
+COPY src/. .
+
+CMD python3 mysql_connector_services_with_test.py
