@@ -43,6 +43,7 @@ topic_handler_dict = {
 
 if __name__ == "__main__":
     # Initialize Kafka Consumer
+    logger.info("Initialize Kafka Consumer")
     consumer = KafkaConsumer(bootstrap_servers=[f'{KAFKA_HOST}:{KAFKA_PORT}'],
                              auto_offset_reset='earliest',
                              enable_auto_commit=True,
@@ -52,9 +53,11 @@ if __name__ == "__main__":
                                'face-result-age', 'face-result-test-service', 'object-result'])
 
     # Create table if it not exist
+    logger.info("Create table if it not exist")
     add_table_to_database()
 
     # Start consuming messages
+    logger.info("Start consuming messages")
     for msg in consumer:
         logger.info(f"NEW Message From [{msg.topic}]")
         topic_handler_dict[msg.topic](msg.value.decode('utf-8'))
