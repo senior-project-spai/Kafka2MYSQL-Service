@@ -9,4 +9,4 @@ RUN pip3 install -r requirements.txt
 # Copy code
 COPY src/. .
 
-CMD python3 mysql_connector_services_with_test.py
+CMD python3 main.py
