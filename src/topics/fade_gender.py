@@ -32,7 +32,7 @@ def handler(msg):
     database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
 
-    for index, face in msg_dict["detail"]:
+    for index, face in msg_dict["detail"].items():
         print(index, face)
 
         # TODO: params
