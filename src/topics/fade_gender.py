@@ -1,6 +1,7 @@
 import mysql.connector
 import json
 import time
+from uuid import uuid4
 
 from logger import logger
 from config import MYSQL_CONFIG_FADE as MYSQL_CONFIG
@@ -14,7 +15,8 @@ INSERT INTO gender
      position_left,
      male_confidence,
      female_confidence,
-     timestamp)
+     timestamp,
+     id)
 VALUES
     (%(image_id)s,
      %(position_top)s,
@@ -23,7 +25,8 @@ VALUES
      %(position_left)s,
      %(male_confidence)s,
      %(female_confidence)s,
-     %(timestamp)s);
+     %(timestamp)s,
+     %(id)s);
 """
 
 
@@ -39,6 +42,7 @@ def handler(msg):
     for _, result in msg_dict["detail"].items():
 
         params_to_insert = {
+            "id": uuid4().hex
             "image_id": msg_dict['image_id'],
             "position_top": int(result['position']['y1']),
             "position_right": int(result['position']['x2']),
@@ -47,7 +51,7 @@ def handler(msg):
             "male_confidence": float(result['gender_p']['Male']),
             "female_confidence": float(result['gender_p']['Female']),
             # epoch in milliseconds
-            "timestamp": int(round(time.time() * 1000))
+            "timestamp": int(round(time.time() * 1000)),
         }
 
         # Insert into table
