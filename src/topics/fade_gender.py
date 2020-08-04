@@ -42,7 +42,7 @@ def handler(msg):
     for _, result in msg_dict["detail"].items():
 
         params_to_insert = {
-            "id": uuid4().hex
+            "id": uuid4().hex,
             "image_id": msg_dict['image_id'],
             "position_top": int(result['position']['y1']),
             "position_right": int(result['position']['x2']),
@@ -51,7 +51,7 @@ def handler(msg):
             "male_confidence": float(result['gender_p']['Male']),
             "female_confidence": float(result['gender_p']['Female']),
             # epoch in milliseconds
-            "timestamp": int(round(time.time() * 1000)),
+            "timestamp": int(round(time.time() * 1000))
         }
 
         # Insert into table
