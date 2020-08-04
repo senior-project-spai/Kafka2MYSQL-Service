@@ -6,7 +6,7 @@ from logger import logger
 from config import MYSQL_CONFIG_FADE as MYSQL_CONFIG
 
 INSERT_GENDER_ROW_QUERY = """
-INSERT INTO Gender
+INSERT INTO gender
     (image_id,
      position_top,
      position_right,
