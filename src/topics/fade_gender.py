@@ -2,7 +2,7 @@ import mysql.connector
 import json
 
 from logger import logger
-from config import MYSQL_CONFIG
+from config import MYSQL_CONFIG_FADE as MYSQL_CONFIG
 
 insert_gender_row_query = """
 INSERT INTO Gender
