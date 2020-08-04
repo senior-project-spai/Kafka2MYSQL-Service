@@ -4,7 +4,7 @@ import mysql.connector
 # local module
 from logger import logger
 from config import KAFKA_HOST, KAFKA_PORT, MYSQL_CONFIG
-from topics import age, gender, race, test, object
+from topics import age, gender, race, test, object, fade_gender
 
 # create table query
 create_age_table_query = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
@@ -39,6 +39,7 @@ topic_handler_dict = {
     'face-result-age': age.handler,
     'face-result-test-service': test.handler,
     'object-result': object.handler,
+    'test-gender-result': fade_gender.handler,  # FADE
 }
 
 if __name__ == "__main__":
@@ -50,7 +51,7 @@ if __name__ == "__main__":
                              group_id='Kafka2MYSQL-Service-group')
     # Subscribe topics
     consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                               'face-result-age', 'face-result-test-service', 'object-result'])
+                               'face-result-age', 'face-result-test-service', 'object-result', 'test-gender-result'])  # FADE
 
     # Create table if it not exist
     logger.info("Create table if it not exist")
