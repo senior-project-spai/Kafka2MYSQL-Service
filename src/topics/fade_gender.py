@@ -1,30 +1,34 @@
 import mysql.connector
 import json
+import time
 
 from logger import logger
 from config import MYSQL_CONFIG_FADE as MYSQL_CONFIG
 
-insert_gender_row_query = """
+INSERT_GENDER_ROW_QUERY = """
 INSERT INTO Gender
     (image_id,
-     type,
-     confidence,
      position_top,
      position_right,
      position_bottom,
-     position_left)
+     position_left,
+     male_confidence,
+     female_confidence,
+     timestamp)
 VALUES
     (%(image_id)s,
-     %(type)s,
-     %(confidence)s,
      %(position_top)s,
      %(position_right)s,
      %(position_bottom)s,
-     %(position_left)s);
+     %(position_left)s,
+     %(male_confidence)s,
+     %(female_confidence)s,
+     %(timestamp)s);
 """
 
 
 def handler(msg):
+    """ Handler for fade_gender topic """
     # parse string into dict
     msg_dict = json.loads(msg)
 
@@ -32,13 +36,27 @@ def handler(msg):
     database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
 
-    for index, result in msg_dict["detail"].items():
-        print(index, result)
+    for _, result in msg_dict["detail"].items():
 
-        # TODO: params
+        params_to_insert = {
+            "image_id": msg_dict['image_id'],
+            "position_top": int(result['position']['y1']),
+            "position_right": int(result['position']['x2']),
+            "position_bottom": int(result['position']['y2']),
+            "position_left": int(result['position']['x1']),
+            "male_confidence": float(result['gender_p']['Male']),
+            "female_confidence": float(result['gender_p']['Female']),
+            # epoch in milliseconds
+            "timestamp": int(round(time.time() * 1000))
+        }
 
-        # TODO: Insert into table
-        # 
+        # Insert into table
+        try:
+            cursor.execute(INSERT_GENDER_ROW_QUERY, params_to_insert)
+            logger.info(json.dumps(params_to_insert, indent=2))
+        except mysql.connector.Error as e:
+            logger.error(json.dumps(params_to_insert, indent=2))
+            raise e
 
     # Commit
     database_connection.commit()
