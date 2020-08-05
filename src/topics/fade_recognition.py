@@ -43,12 +43,12 @@ def handler(msg):
             "id": uuid4().hex,
             "image_id": msg_dict['image_id'],
             # position on image
-            "position_top": int(result['position']['y1']),
-            "position_right": int(result['position']['x2']),
-            "position_bottom": int(result['position']['y2']),
-            "position_left": int(result['position']['x1']),
+            "position_top": int(result['pos']['y1']),
+            "position_right": int(result['pos']['x2']),
+            "position_bottom": int(result['pos']['y2']),
+            "position_left": int(result['pos']['x1']),
             # label
-            "label": str(max(result, key=result.get)),
+            "label": result['answer'] if result['answer'] is not 'UNKNOWN' else None,
             # epoch in milliseconds
             "timestamp": int(round(time.time() * 1000))
         }
