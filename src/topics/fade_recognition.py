@@ -48,7 +48,7 @@ def handler(msg):
             "position_bottom": int(result['pos']['y2']),
             "position_left": int(result['pos']['x1']),
             # label
-            "label": result['answer'] if result['answer'] == 'UNKNOWN' else None,
+            "label": result['answer'] if result['answer'] != 'UNKNOWN' else None,
             # epoch in milliseconds
             "timestamp": int(round(time.time() * 1000))
         }
