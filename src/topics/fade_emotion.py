@@ -7,7 +7,7 @@ from logger import logger
 from config import MYSQL_CONFIG_FADE as MYSQL_CONFIG
 
 INSERT_EMOTION_ROW_QUERY = """
-INSERT INTO gender
+INSERT INTO emotion
     (id,
      image_id,
      position_top,
