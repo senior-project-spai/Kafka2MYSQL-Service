@@ -50,8 +50,7 @@ if __name__ == "__main__":
                              enable_auto_commit=True,
                              group_id='Kafka2MYSQL-Service-group')
     # Subscribe topics
-    consumer.subscribe(topics=['face-result-gender', 'face-result-race',
-                               'face-result-age', 'face-result-test-service', 'object-result', 'test-gender-result'])  # FADE
+    consumer.subscribe(topics=list(topic_handler_dict.keys()))  # FADE
 
     # Create table if it not exist
     logger.info("Create table if it not exist")
