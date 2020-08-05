@@ -94,7 +94,7 @@ def handler(msg):
                                         'left': face['position_left']},
                                        {'top': int(result['pos']['y1']),
                                         'right': int(result['pos']['x2']),
-                                        'bottom': int(result['position']['y2']),
+                                        'bottom': int(result['pos']['y2']),
                                         'left': int(result['pos']['x1'])})
 
             # intersection area threshold
