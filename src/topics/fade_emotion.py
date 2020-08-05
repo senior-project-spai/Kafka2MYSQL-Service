@@ -124,7 +124,7 @@ def handler(msg):
                 break
 
         if face_to_update is not None:
-            logger.info('UPDATE face')
+            logger.info(f'UPDATE face {face_to_update["id"]}')
             query = ("UPDATE face "
                      "SET emotion_id = %(emotion_id)s, position_top = %(new_position_top)s, position_right = %(new_position_right)s, position_bottom = %(new_position_bottom)s, position_left = %(new_position_left)s "
                      "WHERE id = %(face_id)s; ")
@@ -139,15 +139,16 @@ def handler(msg):
         else:
             # Insert new face if condition is not true
             logger.info('INSERT face')
-            query = ("INSERT INTO face (id, image_id, emotion_id, position_top, position_right, position_bottom, position_left) "
-                     "VALUES (%(id)s, %(image_id)s, %(emotion_id)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s)")
+            query = ("INSERT INTO face (id, image_id, emotion_id, position_top, position_right, position_bottom, position_left, timestamp) "
+                     "VALUES (%(id)s, %(image_id)s, %(emotion_id)s, %(position_top)s, %(position_right)s, %(position_bottom)s, %(position_left)s, %(timestamp)s)")
             cursor.execute(query, {'id': uuid4().hex,
                                    'image_id': msg_dict['image_id'],
                                    'emotion_id': result["_id"],
                                    "position_top": int(result['position']['y1']),
                                    "position_right": int(result['position']['x2']),
                                    "position_bottom": int(result['position']['y2']),
-                                   "position_left": int(result['position']['x1']), })
+                                   "position_left": int(result['position']['x1']), 
+                                   "timestamp": int(round(time.time() * 1000))})
 
         # Commit
         database_connection.commit()
