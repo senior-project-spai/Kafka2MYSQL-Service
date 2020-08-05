@@ -4,7 +4,7 @@ import mysql.connector
 # local module
 from logger import logger
 from config import KAFKA_HOST, KAFKA_PORT, MYSQL_CONFIG
-from topics import age, gender, race, test, object, fade_gender, fade_emotion, fade_age
+from topics import age, gender, race, test, object, fade_gender, fade_emotion, fade_age, fade_recognition
 
 # create table query
 create_age_table_query = ("CREATE TABLE IF NOT EXISTS `Age` (`face_image_id` INT,`min_age` INT,`max_age` INT,`confidence` DOUBLE,`position_top` INT,`position_right` INT,`position_bottom` INT,`position_left` INT,`time` DECIMAL(17,6),`added_time` DECIMAL(17,6),PRIMARY KEY (`face_image_id`),FOREIGN KEY (`face_image_id`) REFERENCES `FaceImage` (`id`));")
@@ -39,9 +39,11 @@ topic_handler_dict = {
     'face-result-age': age.handler,
     'face-result-test-service': test.handler,
     'object-result': object.handler,
-    'test-gender-result': fade_gender.handler,  # FADE
-    'test-emotion-result': fade_emotion.handler,  # FADE
-    'test-age-result': fade_age.handler,  # FADE
+    # FADE
+    'test-gender-result': fade_gender.handler,
+    'test-emotion-result': fade_emotion.handler,
+    'test-age-result': fade_age.handler,
+    'test-recognition-result': fade_recognition.handler
 }
 
 if __name__ == "__main__":
