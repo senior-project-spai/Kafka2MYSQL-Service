@@ -40,6 +40,10 @@ def handler(msg):
     database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
 
+    # Update timestamp when receive the result
+    cursor.execute("UPDATE image SET gender_timestamp=%(timestamp)s WHERE id=%(id)s;",
+                   {'timestamp': int(round(time.time() * 1000)), 'id': msg_dict['image_id']})
+
     for _, result in msg_dict["detail"].items():
 
         # Generate ID for each result

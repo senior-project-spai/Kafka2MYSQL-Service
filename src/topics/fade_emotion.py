@@ -52,6 +52,10 @@ def handler(msg):
     database_connection = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = database_connection.cursor()
 
+    # Update timestamp when receive the result
+    cursor.execute("UPDATE image SET emotion_timestamp=%(timestamp)s WHERE id=%(id)s;",
+                   {'timestamp': int(round(time.time() * 1000)), 'id': msg_dict['image_id']})
+
     for _, result in msg_dict["detail"].items():
 
         # Generate ID for each result
@@ -147,7 +151,7 @@ def handler(msg):
                                    "position_top": int(result['position']['y1']),
                                    "position_right": int(result['position']['x2']),
                                    "position_bottom": int(result['position']['y2']),
-                                   "position_left": int(result['position']['x1']), 
+                                   "position_left": int(result['position']['x1']),
                                    "timestamp": int(round(time.time() * 1000))})
 
         # Commit
